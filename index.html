@@ -10,6 +10,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 16px; }
@@ -43,11 +45,27 @@
       #main-nav button { font-size: 0.74rem !important; padding: 0.8rem 0.85rem !important; letter-spacing: 0.04em !important; }
       .story-card, .stotra-card, .mh-card, .phil-card { padding: 0.95rem !important; }
     }
+    /* Leaflet map overrides */
+    #buldhana-map { height: 340px; border-radius: 8px; border: 1px solid #4d3d6a; margin-bottom: 1.5rem; z-index: 0; }
+    .leaflet-container { background: #1e1530 !important; font-family: 'Lora', Georgia, serif; }
+    .leaflet-popup-content-wrapper { background: #1e1530; border: 1px solid #4d3d6a; color: #f8f4f0; border-radius: 8px; }
+    .leaflet-popup-tip { background: #1e1530; }
+    .leaflet-popup-content { font-family: 'Lora', Georgia, serif; font-size: 0.88rem; line-height: 1.6; }
+    .leaflet-popup-content b { color: #ff9a1a; font-family: 'Cinzel', serif; }
+
+    /* Checklist */
+    .check-item { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.75rem 0; border-bottom: 1px solid #2a1f3d; cursor: pointer; }
+    .check-item:last-child { border-bottom: none; }
+    .check-box { width: 22px; height: 22px; min-width: 22px; border: 2px solid #4d3d6a; border-radius: 4px; margin-top: 0.15rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .check-box.checked { background: #ff9a1a; border-color: #ff9a1a; }
+
+    @media (max-width: 767px) {
+      #buldhana-map { height: 260px; }
+    }
     @media (max-width: 400px) {
       #main-nav button { font-size: 0.68rem !important; padding: 0.75rem 0.65rem !important; }
     }
   </style>
-</head>
 <body>
   <div id="root"></div>
 
@@ -170,16 +188,90 @@
       { concept: "Shiva as Yogi and Householder", icon: "🏠", text: "Shiva is simultaneously the supreme ascetic (who meditates for ages) and the devoted householder (husband of Parvati, father of Ganesha and Kartikeya). He holds both truths without contradiction — the deepest model of integrated life." },
     ];
 
+    const buldhanaSites = [
+      { name: "Yadneshwar Mahadev — Lonar", era: "Pre-medieval", icon: "🌋",
+        lat: 19.9774, lng: 76.5079,
+        tag: "Near Meteor Crater Lake",
+        desc: "An ancient, weathered Shiva mandir on the rim of the Lonar crater — one of the world's four meteor impact lakes. The temple stands amid dense forest, half-reclaimed by time, facing the crater's sacred water. Ash-smeared lingams here feel less like worship objects and more like standing rocks that have always been. The impermanence of the structure mirrors the vibhuti philosophy perfectly — ash returning to ash, the mandir quietly dissolving back into earth.",
+        connection: "Lonar crater lake itself was considered sacred — Vishnu slew the demon Lonasura here, but local Shaivite folk tradition made the crater's rim temples to Shiva. Your Buldana ancestors likely came here for major pujas." },
+      { name: "Satgaon Bhusari Temple", era: "12th–14th century (Yadava / Hemadpanthi)", icon: "🏛️",
+        lat: 20.5420, lng: 76.2100,
+        tag: "Hemadpanthi Stone Architecture",
+        desc: "A Hemadpanthi-era Shiva-Vishnu temple showing the harmonious Hari-Hara tradition — where Shiva and Vishnu are worshipped together, neither subordinate. Built in the distinctive Hemadpanthi style: dry-stone interlocking, no mortar, intricate but restrained carvings. Restored from serious ruin, it shows both fragility and resilience. The Yadava kings who built temples like this were the ruling dynasty of Vidarbha-Maharashtra before the Delhi Sultanate — your Maratha ancestors' immediate cultural predecessors.",
+        connection: "Hemadpanthi architecture is the signature of your ancestors' era. When you see temples built this way across Vidarbha, you are looking at the devotional world your lineage lived inside." },
+      { name: "Forest Linga — Buldhana District", era: "Undated (folk tradition)", icon: "🌿",
+        lat: 20.5332, lng: 76.1816,
+        tag: "Living Folk Tradition",
+        desc: "Across Buldhana's forests and village outskirts stand countless unnamed lingams — some with Nandi still in place, some with just the stone, some garlanded with fresh marigolds by farmers passing by. These were never grand temples. They were placed by communities, tended without priests, worshipped at dawn by people going to fields. This is grassroots Shaivism — the kind your ancestors practiced without texts or scholars. The lingam in the wilderness is the purest expression of the Nirguna Brahman concept: no walls, no roof, no intermediary. Just stone, sky, and presence.",
+        connection: "This is the devotion closest to your family history. Not the grand Jyotirlingas, but the quiet village linga that a farmer touched on his way to work." },
+      { name: "Aundha Nagnath Temple", era: "Ancient (Mahabharata-era tradition)", icon: "⭐",
+        lat: 19.8478, lng: 76.5070,
+        tag: "Alternate Jyotirlinga",
+        desc: "Some traditions — including certain Puranic lists — count Aundha Nagnath as one of the 12 Jyotirlingas. Located in Hingoli district, bordering Buldana, this is the most historically significant Shiva site in your ancestral region. The temple's origin is linked to the Pandavas' exile — Yudhishthira is said to have worshipped here. The architecture is ancient, multi-layered, with visible additions from different centuries. Less commercialized than the more famous Jyotirlingas, which makes it feel closer to authentic pilgrimage.",
+        connection: "If your Buldana ancestors ever made a major Shiva pilgrimage, this was the most likely destination — geographically the nearest sacred Jyotirlinga to their home." },
+    ];
+
+    const practiceItems = {
+      morning: [
+        { id: "m1", text: "Chant Maha Mrityunjaya Mantra 11×", detail: "Visualize Neelakantha — blue-throated, serene — absorbing any fear or burden you carry into the day. Let his stillness be your starting point." },
+        { id: "m2", text: "One slow round of Om Namah Shivaya", detail: "Each syllable as a breath: Na (earth) — Ma (water) — Shi (fire) — Va (air) — Ya (ether). Feel the five elements settle in your body." },
+        { id: "m3", text: "One minute of silence — be Nandi", detail: "Sit facing whatever is in front of you. Just watch. No agenda. Nandi's only job is patient, steady presence. Practice this for one minute." },
+      ],
+      midday: [
+        { id: "d1", text: "Pick one philosophy point — apply it", detail: "Choose one concept (Vibhuti, Trishul, Third Eye) and ask: where does this show up in my work or relationships today?" },
+        { id: "d2", text: "One Buldana memory or family connection", detail: "Recall a ruined temple you visited, a story an elder told, or simply sit with the image of your ancestors tending a village lingam. Two or three lines in a journal if possible." },
+        { id: "d3", text: "Ask: What impermanence am I accepting today?", detail: "The ash question. Something is ending, shifting, or uncertain. Name it. Offer it mentally to the lingam." },
+      ],
+      evening: [
+        { id: "e1", text: "One verse of Shiva Tandava or Panchakshara", detail: "Feel the rhythm of the Tandava as a heartbeat — Ravana composed it in surrender, not in victory. Evening practice is surrender practice." },
+        { id: "e2", text: "Shivoham — sit with it for one breath", detail: "Shivoham: I am Shiva. Not as ego — as the recognition that pure consciousness is what you are beneath the day's accumulation. One breath. Let it land." },
+      ],
+      weekly: [
+        { id: "w1", text: "Read one new story from the Stories tab", detail: "Go deep — don't just read, sit with what the story is pointing toward. The lesson line at the bottom is where to spend your time." },
+        { id: "w2", text: "Spend time with one Form of Shiva", detail: "Pick one form, look at an image of it online, and meditate on what it means. Ardhanarishvara for balance. Dakshinamurthy for silence. Nataraja for acceptance." },
+        { id: "w3", text: "Light incense — offer it to your ancestors", detail: "Mentally place yourself in Buldana. A forest lingam. Your ancestors' hands. Offer the smoke. This is not ritual — it is memory and gratitude made physical." },
+      ],
+    };
+
+    function BuldhanaMap() {
+      React.useEffect(() => {
+        const el = document.getElementById("buldhana-map");
+        if (!el) return;
+        const map = L.map("buldhana-map", { zoomControl: true, scrollWheelZoom: false })
+          .setView([20.15, 76.38], 9);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+          maxZoom: 18
+        }).addTo(map);
+        const icon = L.divIcon({
+          html: `<div style="background:#ff9a1a;width:16px;height:16px;border-radius:50%;border:2.5px solid #e8c44a;box-shadow:0 0 10px rgba(255,140,0,0.9)"></div>`,
+          className: "", iconAnchor: [8,8], popupAnchor: [0,-12]
+        });
+        buldhanaSites.forEach(s => {
+          L.marker([s.lat, s.lng], { icon })
+            .addTo(map)
+            .bindPopup(`<b>${s.name}</b><br/><span style="color:#e8c44a;font-size:0.78rem">${s.tag}</span><br/><em style="color:#e0d8e8">${s.era}</em>`);
+        });
+        return () => { map.remove(); };
+      }, []);
+      return <div id="buldhana-map"></div>;
+    }
+
     function App() {
       const [tab, setTab] = useState("stories");
       const [expandedStory, setExpandedStory] = useState(null);
       const [expandedStotra, setExpandedStotra] = useState(null);
+      const [checked, setChecked] = useState({});
+
+      const toggleCheck = (id) => setChecked(prev => ({ ...prev, [id]: !prev[id] }));
 
       const tabs = [
         { id: "stories", label: "Stories", icon: "📖" },
         { id: "forms", label: "Forms of Shiva", icon: "🕉️" },
         { id: "stotras", label: "Stotras", icon: "🎵" },
         { id: "maharashtra", label: "Maharashtra", icon: "🗺️" },
+        { id: "buldhana", label: "Buldhana", icon: "🏛️" },
+        { id: "practice", label: "Practice", icon: "📿" },
         { id: "philosophy", label: "Philosophy", icon: "🧠" },
       ];
 
@@ -197,7 +289,7 @@
               Shiva — The Infinite
             </h1>
             <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.85rem", letterSpacing: "0.25em", textTransform: "uppercase", margin: "0 0 0.8rem" }}>
-              Stories · Forms · Stotras · Maharashtra · Philosophy
+              Stories · Forms · Stotras · Maharashtra · Buldhana · Practice · Philosophy
             </p>
             <p style={{ fontFamily: lora, color: p.ash, fontSize: "1rem", fontStyle: "italic" }}>
               For the Maratha ancestors of Buldana — and for rediscovering what was always yours
@@ -299,6 +391,62 @@
                   </div>
                 );
               })}
+            </div>}
+
+            {/* BULDHANA */}
+            {tab === "buldhana" && <div>
+              <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.78rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${p.border}` }}>Buldhana — Your Ancestral Sacred Ground</p>
+              <p style={{ color: p.ash, fontSize: "1rem", marginBottom: "0.7rem", lineHeight: 1.8 }}>
+                These are the Shiva sites your Maratha ancestors from Buldana district likely knew — some as pilgrimage destinations, some as the quiet village linga passed every morning on the way to the fields. Click a pin on the map to identify each site.
+              </p>
+              <BuldhanaMap key={tab} />
+              {buldhanaSites.map((s, i) => (
+                <div key={i} className="mh-card" style={{ background: p.card, border: `1px solid ${p.border}`, borderRadius: "8px", padding: "1.2rem", marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.5rem", marginBottom: "0.4rem" }}>
+                    <div>
+                      <span style={{ display: "inline-block", background: "rgba(255,154,26,0.15)", border: "1px solid rgba(255,154,26,0.35)", color: p.saffron, fontSize: "0.7rem", fontFamily: cinzel, padding: "0.15rem 0.5rem", borderRadius: "20px", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "0.4rem" }}>{s.tag}</span>
+                      <p style={{ fontFamily: cinzel, color: p.moonWhite, fontWeight: 600, fontSize: "1.02rem", margin: "0 0 0.1rem" }}>{s.icon} {s.name}</p>
+                      <p style={{ color: p.gold, fontSize: "0.85rem", fontStyle: "italic", margin: "0 0 0.6rem" }}>{s.era}</p>
+                    </div>
+                  </div>
+                  <p style={{ color: p.ash, fontSize: "1rem", lineHeight: 1.8, margin: "0 0 0.8rem" }}>{s.desc}</p>
+                  <div style={{ background: "rgba(34,184,168,0.08)", border: "1px solid rgba(34,184,168,0.25)", borderRadius: "6px", padding: "0.7rem 0.9rem", color: p.teal, fontSize: "0.92rem", lineHeight: 1.7 }}>
+                    <strong style={{ fontFamily: cinzel, fontSize: "0.78rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>Your connection:</strong> {s.connection}
+                  </div>
+                </div>
+              ))}
+            </div>}
+
+            {/* PRACTICE */}
+            {tab === "practice" && <div>
+              <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.78rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${p.border}` }}>Daily Practice — Building on Your Stotras</p>
+              <p style={{ color: p.ash, fontSize: "1rem", marginBottom: "1.5rem", lineHeight: 1.8 }}>
+                Layer this into your day as you go deeper with the stotras. Check items off as you complete them — they reset each visit so you can use this daily.
+              </p>
+              {[
+                { period: "🌅 Morning", color: p.saffron, items: practiceItems.morning, subtitle: "5–10 minutes" },
+                { period: "☀️ Midday", color: p.gold, items: practiceItems.midday, subtitle: "2–3 minute reflection" },
+                { period: "🌙 Evening", color: "#7b6fcc", items: practiceItems.evening, subtitle: "Winding down" },
+                { period: "🔱 Weekly Deeper Dive", color: p.teal, items: practiceItems.weekly, subtitle: "Once a week, unhurried" },
+              ].map((section, si) => (
+                <div key={si} style={{ background: p.card, border: `1px solid ${p.border}`, borderRadius: "8px", padding: "1.2rem", marginBottom: "1.2rem" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "0.8rem" }}>
+                    <p style={{ fontFamily: cinzel, color: section.color, fontWeight: 600, fontSize: "1rem", margin: 0 }}>{section.period}</p>
+                    <p style={{ color: p.border, fontSize: "0.8rem", fontStyle: "italic" }}>{section.subtitle}</p>
+                  </div>
+                  {section.items.map(item => (
+                    <div key={item.id} className="check-item" onClick={() => toggleCheck(item.id)}>
+                      <div className={`check-box${checked[item.id] ? " checked" : ""}`}>
+                        {checked[item.id] && <span style={{ color: "#0d0a14", fontSize: "0.8rem", fontWeight: 700 }}>✓</span>}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ color: checked[item.id] ? p.border : p.moonWhite, fontSize: "0.98rem", margin: "0 0 0.25rem", textDecoration: checked[item.id] ? "line-through" : "none", transition: "all 0.2s" }}>{item.text}</p>
+                        <p style={{ color: p.ash, fontSize: "0.88rem", lineHeight: 1.7, margin: 0, opacity: 0.85 }}>{item.detail}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>}
 
             {/* PHILOSOPHY */}
