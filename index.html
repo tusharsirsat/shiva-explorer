@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shiva — The Infinite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d0a14; font-family: 'Lora', Georgia, serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d0a14; }
+    ::-webkit-scrollbar-thumb { background: #4d3d6a; border-radius: 3px; }
+    nav::-webkit-scrollbar { height: 4px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const p = {
+      bg: "#0d0a14", surface: "#16101f", card: "#1e1530",
+      border: "#4d3d6a", saffron: "#ff9a1a", gold: "#e8c44a",
+      ash: "#e0d8e8", moonWhite: "#f8f4f0", teal: "#22b8a8",
+    };
+
+    const stories = [
+      { title: "The Churning of the Ocean (Samudra Manthan)", category: "Cosmic", icon: "🌊",
+        short: "Shiva drinks the Halahala poison to save all creation.",
+        full: "When gods and demons churned the cosmic ocean for Amrita (nectar of immortality), a devastating poison called Halahala emerged first — powerful enough to destroy all creation. Neither gods nor demons could contain it. In desperation, they turned to Shiva. Without hesitation, Shiva drank the entire poison. Goddess Parvati, alarmed, caught his throat with her hands to stop it from reaching his stomach. The poison stayed in his throat, turning it blue-black forever — earning him the name Neelakantha (Blue-Throated One). This story is the ultimate metaphor: the greatest being absorbs the world's suffering so others may flourish.",
+        lesson: "True strength is the willingness to bear what others cannot." },
+      { title: "Sati's Self-Immolation and Shiva's Grief", category: "Love & Loss", icon: "🔥",
+        short: "Shiva wanders the cosmos carrying his beloved Sati's body.",
+        full: "Sati, daughter of Daksha, married Shiva against her father's wishes. When Daksha organized a grand yajna (fire ritual) and deliberately excluded Shiva — insulting him before all creation — Sati could not bear the humiliation of her husband. She immolated herself in the sacred fire. When Shiva heard, his grief was absolute and terrifying. He retrieved Sati's body and wandered the cosmos carrying her, inconsolable, lost in mourning. The universe fell into chaos. To release Shiva from grief, Vishnu used his Sudarshana Chakra to dismember Sati's body. Each place a piece fell became a Shakti Peetha — sacred sites of feminine divine power. There are 51 such sites across India, each also a place where Shiva's devotion lives permanently.",
+        lesson: "Grief and love are inseparable. The Shakti Peethas are born from sorrow." },
+      { title: "The Destruction of Tripura", category: "War & Victory", icon: "⚡",
+        short: "Shiva destroys three demon cities with a single arrow — but only when everything aligns.",
+        full: "Three demon brothers — Tarakaksha, Kamalaksha, and Vidyunmali — were granted invincible cities (Tripura) floating in the sky: one of gold, one of silver, one of iron. For a thousand years, no one could destroy them. The condition of their boon: the three cities could only be destroyed when they aligned in a single line, with a single arrow, shot by a single archer from a single bow. When the time came, the entire universe became the bow. The earth was the chariot, the sun and moon the wheels, Mount Meru the bowstaff, Brahma the charioteer, Vishnu the arrow — and Shiva merely smiled and released. The moment he released, the cities burned. What's extraordinary: Shiva didn't even need to try. The whole universe conspired to make it happen; he was simply the still point through which it passed.",
+        lesson: "The greatest power is often stillness at the right moment." },
+      { title: "Ganga's Descent — Shiva Catches the River", category: "Cosmic", icon: "💧",
+        short: "Shiva catches the celestial Ganga in his matted hair to save the earth.",
+        full: "King Bhagiratha performed extreme tapas (austerities) for thousands of years to bring the celestial Ganga down to earth to purify his ancestors' ashes. The gods finally agreed — but Ganga's force was so immense that her descent would have shattered the earth entirely. Only Shiva could receive her. He stood immovably beneath her fall, and Ganga plunged into his vast, matted locks (jata). She became lost there, twisting through his hair for years, unable to find her way out. Bhagiratha prayed again. Only then did Shiva gently part his hair and let her flow — now tamed, life-giving, gentle — down the Himalayas to the plains of India. The Ganga we know flows from Shiva's hair. Every temple where Ganga water is used in abhishek connects to this moment.",
+        lesson: "What would destroy the world needs a vessel strong enough to receive it." },
+      { title: "The Pine Forest Sages and Shiva's Teaching", category: "Philosophy", icon: "🌲",
+        short: "Shiva disguises himself to teach arrogant sages a lesson about ego.",
+        full: "In the Deodar forest (Daruvana), a group of powerful Brahmin sages had grown arrogant, believing their rituals and knowledge made them superior to the gods themselves. Shiva came to them disguised as a naked, ash-smeared wanderer of extraordinary beauty. Disturbed by his effect on their wives, the sages attacked him — casting curses, summoning serpents, then a tiger, then a fierce dwarf-demon (Apasmara, representing ego and heedlessness). Each one, Shiva effortlessly absorbed or overcame — wearing the serpent as an ornament, draping the tiger's skin, and pinning the dwarf underfoot (the iconic Nataraja pose). In this dance, the sages finally recognized him. Nataraja — Shiva as Cosmic Dancer — stands on Apasmara forever, showing that consciousness dances eternally upon subdued ego.",
+        lesson: "Nataraja is not just art. It is the universe's operating system." },
+      { title: "Shiva and Arjuna — The Hunter of the Forest", category: "Warrior Devotion", icon: "🏹",
+        short: "Arjuna fights a mysterious hunter, who reveals himself as Shiva.",
+        full: "During the Pandavas' exile, Arjuna undertook intense penance to obtain divine weapons. Shiva appeared disguised as a Kirata — a mountain hunter — accompanied by Parvati dressed as a huntress. When a demon in the form of a boar attacked Arjuna, both Arjuna and the hunter shot it simultaneously. Arjuna claimed the kill; the hunter calmly disagreed. They argued, then fought. Arjuna was astonished to find all his divine weapons useless against this simple hunter. His bow broke, his arrows failed, he fought hand-to-hand and was defeated. Prostrating himself in surrender, Arjuna offered flowers to Shiva — and the garland landed on the hunter's head. Only then did Shiva reveal himself, restore Arjuna's powers, and gift him the Pashupatastra — the most devastating weapon in existence.",
+        lesson: "The divine tests through disguise. Surrender often arrives before recognition." },
+      { title: "Markandeya and the Gift of Immortality", category: "Devotion", icon: "⌛",
+        short: "Shiva defeats Yama (Death) himself to honor a 16-year-old boy's devotion.",
+        full: "The sage-couple Mrikandu and Marudvati were granted a choice: a highly intelligent but short-lived son, or a dull-witted but long-lived one. They chose the brilliant child — Markandeya — who was fated to die at 16. As his death-hour approached, Markandeya clung to a Shiva lingam in intense prayer. Yama, the god of death, arrived and cast his noose. It landed around both Markandeya and the lingam. Shiva erupted from the lingam in fury — none may cast a noose around his devotee AND him simultaneously. He kicked Yama so forcefully that the god of death fell unconscious. The gods intervened, Yama was revived, but Markandeya was declared immortal — forever 16, forever in devotion. The Maha Mrityunjaya Mantra is Markandeya's mantra of victory over death.",
+        lesson: "Shiva is Mrityunjaya — the conqueror of death — for those who hold fast to him." },
+      { title: "The Origin of the Lingam — Brahma and Vishnu's Search", category: "Philosophy", icon: "🔱",
+        short: "Brahma and Vishnu cannot find the beginning or end of Shiva's pillar of light.",
+        full: "In the beginning, Brahma (creator) and Vishnu (preserver) argued about who was supreme. A column of fire — blazing, infinite — appeared between them, with no beginning and no end. Brahma took the form of a swan and flew upward for thousands of years; Vishnu became a boar and dug downward. Neither found an end. Brahma, embarrassed, lied — claiming he'd reached the top. Shiva exposed the lie. Vishnu humbly admitted his failure. Shiva then manifested from the column: the infinite is worshipped in the form of the Lingam — not a symbol of limitation, but of the limitless made accessible. This is why Jyotirlingas (Columns of Light) are the most sacred Shiva shrines. Three of the 12 Jyotirlingas are in Maharashtra — including Trimbakeshwar near Nashik, and Bhimashankar and Grishneshwar near Pune/Aurangabad.",
+        lesson: "The Lingam is not an idol. It is infinity compressed into a form we can touch." },
+      { title: "Shiva and Parvati's Marriage", category: "Love & Union", icon: "💫",
+        short: "The cosmic wedding that unites consciousness and energy.",
+        full: "After Sati's death, Shiva withdrew into meditation for ages. Meanwhile, Tarakasura, a demon with a boon that only Shiva's son could kill him, terrorized the world. The gods needed Parvati — Sati reborn as Himavan's daughter — to woo Shiva and produce an heir. Parvati undertook ferocious tapas to win Shiva's heart, surpassing any austerity the gods had seen. Yet when Shiva tested her by appearing as an old Brahmin and insulting himself before her, she defended Shiva fiercely. He revealed himself. Their marriage was cosmic theater: Shiva arrived barefoot, smeared in ash, with serpents, a skull and the crescent moon as ornaments — a procession that terrified Parvati's mother. Yet their union is the marriage of pure consciousness (Shiva) and cosmic energy (Shakti). Without Shakti, Shiva is Shava — a corpse. Without Shiva, Shakti has no direction. Together they are Ardhanarishvara — the half-man-half-woman form.",
+        lesson: "Shiva and Shakti are never truly separate. The universe is their conversation." },
+      { title: "The Birth of Kartikeya and the Killing of Tarakasura", category: "War & Victory", icon: "🌟",
+        short: "Shiva's son Kartikeya is born to defeat the undefeatable demon.",
+        full: "The gods desperately needed Shiva to produce a son to defeat Tarakasura. But Shiva was deep in meditation — his tapas generating energy so intense it was burning the cosmos. Kamadeva (god of love) was sent to shoot Shiva with his arrows of desire. Shiva opened his third eye and reduced Kama to ash instantly. But love's purpose had been partially achieved — Shiva's seed fell and was carried by Agni (fire) and then the Ganga. Six divine mothers (the Krittikas — the Pleiades) raised the infant from the reeds. The child had six heads to drink from all six mothers simultaneously. This was Kartikeya (also Murugan, Skanda, Subramanya) — the commander of the divine army, who defeated Tarakasura with a single spear. The burning of Kama and his rebirth as Manmatha is why Holi is associated with Shiva — Kama's burning is celebrated.",
+        lesson: "Destruction creates space for a new kind of life to emerge." },
+      { title: "Shiva as Dakshinamurthy — The Silent Teacher", category: "Philosophy", icon: "🧘",
+        short: "The young guru who teaches four ancient sages through perfect silence.",
+        full: "The four Kumaras — Sanaka, Sanandana, Sanatana, and Sanatkumara — were ancient sages, eternally youthful, deeply wise, and seekers of ultimate truth. They approached Shiva on Mount Meru, seeking knowledge beyond all scripture. Shiva sat beneath a banyan tree, facing south (dakshin), young and radiant. He held up his right hand in Chinmudra — index finger and thumb touching — and fell into silence. No words. Just stillness. And in that stillness, the four sages received total illumination. All their questions dissolved. Dakshinamurthy is considered the first guru — teaching through mouna (silence), through being rather than explaining. Every guru lineage in India traces itself ultimately back to this moment under the banyan tree.",
+        lesson: "The deepest teaching has no words. Presence is the highest instruction." },
+      { title: "Shiva Saves Devotees — Kashi's Guardian", category: "Devotion", icon: "🏛️",
+        short: "Shiva as the eternal lord of Kashi, present at every death there.",
+        full: "Kashi (Varanasi) is said to rest not on the earth but on Shiva's trident. The Kashi Khanda describes how Shiva promised that any being who dies within the boundaries of Kashi — human, animal, or insect — will receive Tarak Mantra whispered in their ear at death. This mantra of liberation means that in Kashi, death itself becomes moksha. This is why cremations at Manikarnika Ghat have burned continuously for millennia — they are not funeral pyres but liberation ceremonies, with Shiva himself officiating each one. People come to Kashi to die. The Vishwanatha Jyotirlinga is at the center — the axis of the city, the axis of the world. Shiva is both destroyer and liberator: he ends the cycle, which is the greatest gift.",
+        lesson: "Shiva doesn't promise an easy life. He promises that the end of the journey leads home." },
+    ];
+
+    const forms = [
+      { name: "Nataraja", subtitle: "The Cosmic Dancer", icon: "💃", desc: "Shiva as the eternal dance of creation and destruction. His raised foot grants liberation; the dwarf Apasmara crushed beneath him is ego. The ring of fire is samsara. The drum creates; the fire dissolves; the gesture says 'fear not.'" },
+      { name: "Ardhanarishvara", subtitle: "The Half-Male, Half-Female", icon: "☯️", desc: "Right side Shiva, left side Parvati. The universe cannot exist with only consciousness or only energy. This form is the visual answer to the question of duality — there is none." },
+      { name: "Dakshinamurthy", subtitle: "The Silent Guru", icon: "🧘", desc: "Young Shiva seated under a banyan tree, teaching ancient sages through silence. The origin of all guru-disciple lineages in Hinduism. The most philosophically profound form." },
+      { name: "Bhairava", subtitle: "The Fierce Wanderer", icon: "🌑", desc: "Shiva in his terrifying aspect, roaming as a wanderer with a skull-cup. This form severed one of Brahma's heads (the fifth, arrogant one). Associated with midnight, cremation grounds, and radical honesty." },
+      { name: "Pashupati", subtitle: "Lord of All Creatures", icon: "🐘", desc: "The proto-Shiva found in Indus Valley seals — seated in yogic posture, surrounded by animals. This may be the oldest image of Shiva, older than the Vedas. Pashupati = 'lord of the bound souls.'" },
+      { name: "Mahakala", subtitle: "The Great Time", icon: "⌛", desc: "Shiva as time itself — the force that consumes all things. The famous Mahakaleshwar Jyotirlinga in Ujjain embodies this form. Mahakala is worshipped at midnight with fresh ash. Time ultimately kneels to nothing — except Shiva, who is beyond it." },
+      { name: "Neelakantha", subtitle: "The Blue-Throated One", icon: "💙", desc: "The form after drinking Halahala poison. Blue throat, ash-white body, serene expression. The mark of one who has swallowed the world's poison and stands unharmed — the deepest compassion." },
+      { name: "Kirata", subtitle: "The Mountain Hunter", icon: "🏹", desc: "Shiva disguised as a tribal hunter, appearing to test Arjuna in the forest. The divine can arrive in any form, especially the unexpected one. Kirata Shiva is beloved in tribal and forest traditions." },
+    ];
+
+    const stotras = [
+      { name: "Maha Mrityunjaya Mantra", lang: "Sanskrit",
+        text: "ॐ त्र्यम्बकं यजामहे सुगन्धिम् पुष्टिवर्धनम् उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय मामृतात्",
+        transliteration: "Om Tryambakam yajamahe sugandhim pushtivardhanam; Urvarukamiva bandhanan mrityormukshiya mamritat",
+        meaning: "We worship the three-eyed One who is fragrant and nourishes all. Like the cucumber freed from its vine, may we be liberated from death, not from immortality.",
+        use: "Chanted for healing, overcoming fear, and transcending death. Markandeya's mantra. Deeply powerful in times of illness or grief." },
+      { name: "Shiva Panchakshara Stotra", lang: "Sanskrit",
+        text: "नागेन्द्रहाराय त्रिलोचनाय भस्माङ्गरागाय महेश्वराय...",
+        transliteration: "Nagendra haraya trilochanaya, bhashmanga ragaya maheshwaraya...",
+        meaning: "To the one who wears the serpent-king as garland, the three-eyed one, smeared with ash, the great lord... (Built around Na-Ma-Shi-Va-Ya — the five-syllable Panchakshara)",
+        use: "The Panchakshara 'Namashivaya' is considered the essence of all Shiva worship. Each syllable corresponds to one of the five elements." },
+      { name: "Shiva Tandava Stotra", lang: "Sanskrit",
+        text: "जटाटवीगलज्जलप्रवाहपावितस्थले गलेऽवलम्ब्य लम्बितां भुजङ्गतुङ्गमालिकाम्...",
+        transliteration: "Jatatavigalajjala pravaha pavitasthale, Gale avalambya lambitam bhujangalunga malikam...",
+        meaning: "Water flowing from the forest of matted locks purifies his throat; the great serpent garland hangs at his neck... (Composed by Ravana after trying to lift Mount Kailash.)",
+        use: "One of the most powerful and musical stotras. Ravana composed it as an act of surrender after Shiva pinned his hand under Kailash. Ravana became one of Shiva's greatest devotees." },
+      { name: "Bilvashtakam", lang: "Sanskrit",
+        text: "त्रिदलं त्रिगुणाकारं त्रिनेत्रं च त्रियायुधम् त्रिजन्मपापसंहारं एकबिल्वं शिवार्पणम्",
+        transliteration: "Tridalam trigunaakaram trinetram cha triyayudham; Trijanma papa samharam eka bilvam shivarpanam",
+        meaning: "The three-lobed leaf (bel leaf), representing the three gunas, three eyes, three weapons — offering one bel leaf destroys the sins of three births.",
+        use: "Chanted while offering Bilva (bel) leaves to the Shivalinga. Extremely common in Maharashtra Shiva temples. The bel leaf is Shiva's most beloved offering — even more than flowers." },
+      { name: "Shiva Ashtakam", lang: "Sanskrit",
+        text: "प्रभुं प्राणनाथं विभुं विश्वनाथं जगन्नाथनाथं सदानन्दभाजम्...",
+        transliteration: "Prabhum prananatha vibhum vishvanatha, Jagannatha natham sadananda bhaajam...",
+        meaning: "Lord of life, all-pervading, master of the universe, lord of the world's lord, ever-blissful...",
+        use: "A hymn of total surrender, recognizing Shiva as the ultimate reality behind all names and forms." },
+    ];
+
+    const maharashtra = [
+      { name: "Trimbakeshwar", dist: "Nashik", type: "Jyotirlinga", icon: "🔱", desc: "One of 12 Jyotirlingas. The Godavari river (called Gautami here) originates from this temple's vicinity. The lingam here has three faces — Brahma, Vishnu, Shiva. The only Jyotirlinga where the three deities are visible together." },
+      { name: "Bhimashankar", dist: "Pune (Sahyadris)", type: "Jyotirlinga", icon: "🔱", desc: "Deep in the Sahyadri forests near Pune. Said to be where Shiva defeated the demon Bhima (not Bhima Pandava). The Bhima river originates here. Sacred to tribal communities of the Western Ghats." },
+      { name: "Grishneshwar", dist: "Aurangabad (near Ellora)", type: "Jyotirlinga", icon: "🔱", desc: "The 12th and last Jyotirlinga. Located near Ellora caves — meaning you can visit both on the same day. The Shivalaya where Kushikha revived her dead son, and Shiva appeared to end her suffering." },
+      { name: "Aundha Nagnath", dist: "Hingoli", type: "Jyotirlinga (alternate list)", icon: "⭐", desc: "Some traditions count this Vidarbha-region temple as one of the 12 Jyotirlingas. Ancient, powerful, and less commercialized. Geographically close to the Buldana/Vidarbha region." },
+      { name: "Shegaon Region Temples", dist: "Buldhana District", type: "Regional Pilgrimage", icon: "🏛️", desc: "Buldhana district itself has ancient Shiva temples interwoven with Varkari and folk devotional traditions. The region's Shaivite heritage runs deep — your ancestors were part of a continuous living tradition, not just mythology." },
+      { name: "Pandharpur & Vitthal-Shiva Connection", dist: "Solapur", type: "Tradition", icon: "🚶", desc: "The Varkari tradition — the pilgrimage to Pandharpur — is deeply woven with Shaivite roots. Vitthal is sometimes understood as a synthesis of Vishnu and Shiva. The wari (pilgrimage) your ancestors may have walked connects both traditions." },
+    ];
+
+    const philosophyPoints = [
+      { concept: "Shiva as Nirguna Brahman", icon: "∞", text: "In Advaita Vedanta, Shiva is not a deity with a personality — he is the formless absolute reality itself. The Lingam is 'infinity compressed into touchability.' He has a personality only for those who need one." },
+      { concept: "The Three Eyes", icon: "👁️", text: "The third eye (triksha) is not just a weapon — it is the eye of wisdom, of pure perception beyond duality. The two physical eyes see subject and object separately. The third eye sees through the illusion of separation." },
+      { concept: "Ash (Vibhuti)", icon: "🌫️", text: "Shiva is smeared in ash from cremation grounds. This is not macabre — it is philosophical. Ash is what everything becomes. Wearing ash means you have deeply accepted impermanence. It is the most honest ornament." },
+      { concept: "The Crescent Moon", icon: "🌙", text: "The crescent (Chandra) worn in Shiva's hair represents time — specifically, time that is controlled rather than consuming. The moon waxes and wanes, but Shiva holds it still. Time runs through everything; Shiva transcends it." },
+      { concept: "Shamshan (Cremation Ground) as Home", icon: "🪦", text: "Shiva dwells where life ends. This is not nihilism — it is the radical recognition that where things end is also where they begin again. The cremation ground is simultaneously the most honest and the most sacred place." },
+      { concept: "The Trishul (Trident)", icon: "🔱", text: "The three prongs represent: the three gunas (tamas, rajas, sattva), the three states (waking, dream, deep sleep), and past-present-future. Shiva holds the trident — meaning he operates beyond all three simultaneously." },
+      { concept: "Nandi the Bull", icon: "🐂", text: "Nandi sits facing the Lingam, always, in every Shiva temple. Nandi is the ideal devotee — steady, patient, just watching. When you look at the Lingam between Nandi's horns, you are seeing through the eyes of the perfected seeker." },
+      { concept: "Shiva as Yogi and Householder", icon: "🏠", text: "Shiva is simultaneously the supreme ascetic (who meditates for ages) and the devoted householder (husband of Parvati, father of Ganesha and Kartikeya). He holds both truths without contradiction — the deepest model of integrated life." },
+    ];
+
+    function App() {
+      const [tab, setTab] = useState("stories");
+      const [expandedStory, setExpandedStory] = useState(null);
+      const [expandedStotra, setExpandedStotra] = useState(null);
+
+      const tabs = [
+        { id: "stories", label: "Stories", icon: "📖" },
+        { id: "forms", label: "Forms of Shiva", icon: "🕉️" },
+        { id: "stotras", label: "Stotras", icon: "🎵" },
+        { id: "maharashtra", label: "Maharashtra", icon: "🗺️" },
+        { id: "philosophy", label: "Philosophy", icon: "🧠" },
+      ];
+
+      const cinzel = "'Cinzel', serif";
+      const lora = "'Lora', Georgia, serif";
+
+      return (
+        <div style={{ fontFamily: lora, background: p.bg, color: p.moonWhite, minHeight: "100vh" }}>
+
+          {/* HEADER */}
+          <header style={{ background: "linear-gradient(180deg,#1a0a2e 0%,#0d0a14 100%)", padding: "2.5rem 1.5rem 1.8rem", textAlign: "center", borderBottom: `1px solid ${p.border}`, position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: "-40px", left: "50%", transform: "translateX(-50%)", width: "320px", height: "320px", background: "radial-gradient(circle,rgba(255,140,0,0.13) 0%,transparent 70%)", pointerEvents: "none" }} />
+            <div style={{ fontSize: "2.8rem", marginBottom: "0.4rem" }}>🕉️</div>
+            <h1 style={{ fontFamily: cinzel, fontSize: "clamp(2rem,5vw,3.2rem)", fontWeight: 600, color: p.saffron, letterSpacing: "0.08em", margin: "0 0 0.4rem", textShadow: "0 0 40px rgba(255,140,0,0.4)" }}>
+              Shiva — The Infinite
+            </h1>
+            <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.85rem", letterSpacing: "0.25em", textTransform: "uppercase", margin: "0 0 0.8rem" }}>
+              Stories · Forms · Stotras · Maharashtra · Philosophy
+            </p>
+            <p style={{ fontFamily: lora, color: p.ash, fontSize: "1rem", fontStyle: "italic" }}>
+              For the Maratha ancestors of Buldana — and for rediscovering what was always yours
+            </p>
+          </header>
+
+          {/* NAV */}
+          <nav style={{ display: "flex", overflowX: "auto", background: p.surface, borderBottom: `1px solid ${p.border}`, padding: "0 0.5rem" }}>
+            {tabs.map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{ background: tab === t.id ? p.card : "transparent", border: "none", color: tab === t.id ? p.saffron : p.ash, padding: "1rem 1.2rem", cursor: "pointer", fontSize: "0.82rem", fontFamily: cinzel, letterSpacing: "0.08em", whiteSpace: "nowrap", borderBottom: tab === t.id ? `2px solid ${p.saffron}` : "2px solid transparent", transition: "all 0.2s" }}>
+                {t.icon} {t.label}
+              </button>
+            ))}
+          </nav>
+
+          {/* CONTENT */}
+          <div style={{ padding: "1.8rem 1.5rem", maxWidth: "900px", margin: "0 auto" }}>
+
+            {/* STORIES */}
+            {tab === "stories" && <div>
+              <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.78rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${p.border}` }}>12 Stories — Beyond the Basics</p>
+              <p style={{ color: p.ash, fontSize: "1rem", marginBottom: "1.5rem", lineHeight: 1.8 }}>You mentioned knowing 5–8 stories. Here are 12 — some you may know, others that will open new dimensions. Click any story to read the full version.</p>
+              {stories.map((s, i) => (
+                <div key={i} onClick={() => setExpandedStory(expandedStory === i ? null : i)}
+                  style={{ background: p.card, border: `1px solid ${expandedStory === i ? p.saffron + "66" : p.border}`, borderRadius: "8px", padding: "1.2rem", marginBottom: "1rem", cursor: "pointer", transition: "border 0.2s" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+                    <span style={{ fontSize: "1.6rem", minWidth: "2rem" }}>{s.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontFamily: cinzel, color: p.moonWhite, fontWeight: 600, margin: "0 0 0.2rem", fontSize: "1.02rem" }}>{s.title}</p>
+                      <p style={{ fontFamily: cinzel, color: p.saffron, fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", margin: 0 }}>{s.category}</p>
+                    </div>
+                    <span style={{ color: p.border, fontSize: "1.1rem", minWidth: "1.2rem", textAlign: "right" }}>{expandedStory === i ? "▲" : "▼"}</span>
+                  </div>
+                  <p style={{ color: p.ash, fontSize: "1rem", marginTop: "0.6rem", lineHeight: 1.7 }}>{s.short}</p>
+                  {expandedStory === i && <>
+                    <p style={{ color: p.moonWhite, lineHeight: 1.9, fontSize: "1rem", marginTop: "1rem", paddingTop: "1rem", borderTop: `1px solid ${p.border}` }}>{s.full}</p>
+                    <div style={{ background: "linear-gradient(135deg,rgba(212,175,55,0.1),rgba(255,140,0,0.08))", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", padding: "0.9rem 1rem", marginTop: "0.8rem", color: p.gold, fontSize: "0.97rem", fontStyle: "italic" }}>✦ {s.lesson}</div>
+                  </>}
+                </div>
+              ))}
+            </div>}
+
+            {/* FORMS */}
+            {tab === "forms" && <div>
+              <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.78rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${p.border}` }}>Eight Principal Forms of Shiva</p>
+              <p style={{ color: p.ash, fontSize: "1rem", marginBottom: "1.5rem", lineHeight: 1.8 }}>Shiva has 64 manifestations. These eight are the ones most encountered in temples, scripture, and living practice.</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: "1rem" }}>
+                {forms.map((f, i) => (
+                  <div key={i} style={{ background: p.card, border: `1px solid ${p.border}`, borderRadius: "8px", padding: "1.2rem" }}>
+                    <div style={{ fontSize: "2rem" }}>{f.icon}</div>
+                    <p style={{ fontFamily: cinzel, color: p.saffron, fontWeight: 600, fontSize: "1.05rem", margin: "0.5rem 0 0.2rem" }}>{f.name}</p>
+                    <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", margin: "0 0 0.7rem" }}>{f.subtitle}</p>
+                    <p style={{ color: p.ash, fontSize: "0.97rem", lineHeight: 1.75, margin: 0 }}>{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>}
+
+            {/* STOTRAS */}
+            {tab === "stotras" && <div>
+              <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.78rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${p.border}` }}>Key Stotras — Context for Your Learning</p>
+              <p style={{ color: p.ash, fontSize: "1rem", marginBottom: "1.5rem", lineHeight: 1.8 }}>You're learning Shiv Stotras in English — here is context for the most important ones: their origin, meaning, and when/why they are used.</p>
+              {stotras.map((s, i) => (
+                <div key={i} onClick={() => setExpandedStotra(expandedStotra === i ? null : i)}
+                  style={{ background: p.card, border: `1px solid ${expandedStotra === i ? p.gold + "55" : p.border}`, borderRadius: "8px", padding: "1.3rem", marginBottom: "1rem", cursor: "pointer", transition: "border 0.2s" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <p style={{ fontFamily: cinzel, color: p.moonWhite, fontWeight: 600, margin: 0, fontSize: "1.02rem" }}>{s.name}</p>
+                      <p style={{ fontFamily: cinzel, color: p.saffron, fontSize: "0.72rem", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "0.2rem" }}>{s.lang}</p>
+                    </div>
+                    <span style={{ color: p.border, fontSize: "1.1rem" }}>{expandedStotra === i ? "▲" : "▼"}</span>
+                  </div>
+                  {expandedStotra === i && <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: `1px solid ${p.border}` }}>
+                    <p style={{ color: p.saffron, fontSize: "1.12rem", lineHeight: 1.9, fontStyle: "italic", margin: "0 0 0.5rem" }}>{s.text}</p>
+                    <p style={{ color: p.gold, fontSize: "0.97rem", lineHeight: 1.8, margin: "0 0 0.7rem", fontStyle: "italic" }}>{s.transliteration}</p>
+                    <p style={{ color: p.moonWhite, fontSize: "1rem", lineHeight: 1.8, margin: "0 0 0.7rem" }}><strong style={{ color: p.gold }}>Meaning:</strong> {s.meaning}</p>
+                    <div style={{ background: "rgba(34,184,168,0.1)", border: "1px solid rgba(34,184,168,0.3)", borderRadius: "5px", padding: "0.8rem", color: p.teal, fontSize: "0.95rem", lineHeight: 1.7 }}><strong>When used:</strong> {s.use}</div>
+                  </div>}
+                </div>
+              ))}
+            </div>}
+
+            {/* MAHARASHTRA */}
+            {tab === "maharashtra" && <div>
+              <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.78rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${p.border}` }}>Shiva in Maharashtra — Your Sacred Geography</p>
+              <p style={{ color: p.ash, fontSize: "1rem", marginBottom: "0.6rem", lineHeight: 1.8 }}>Maharashtra holds <strong style={{ color: p.gold }}>3 of the 12 Jyotirlingas</strong> — the holiest Shiva shrines on earth. No other state has more. Your ancestors didn't just worship Shiva; they lived inside his geography.</p>
+              <p style={{ color: p.ash, fontSize: "1rem", marginBottom: "1.5rem", lineHeight: 1.8 }}>Buldana district is in Vidarbha — the eastern heartland, historically connected to the Aundha Nagnath region and the broader Maratha Shaivite tradition.</p>
+              {maharashtra.map((m, i) => {
+                const isJyoti = m.type === "Jyotirlinga";
+                const badgeColor = isJyoti ? p.gold : m.type.includes("alternate") ? p.saffron : p.teal;
+                return (
+                  <div key={i} style={{ background: isJyoti ? `linear-gradient(135deg,${p.card},rgba(212,175,55,0.08))` : p.card, border: `1px solid ${isJyoti ? "rgba(212,175,55,0.4)" : p.border}`, borderRadius: "8px", padding: "1.2rem", marginBottom: "1rem" }}>
+                    <span style={{ display: "inline-block", background: badgeColor + "22", border: `1px solid ${badgeColor}55`, color: badgeColor, fontSize: "0.7rem", fontFamily: cinzel, padding: "0.15rem 0.5rem", borderRadius: "20px", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "0.5rem" }}>{m.type}</span>
+                    <p style={{ fontFamily: cinzel, color: p.moonWhite, fontWeight: 600, margin: "0.2rem 0 0.1rem", fontSize: "1.02rem" }}>{m.icon} {m.name}</p>
+                    <p style={{ color: p.ash, fontSize: "0.9rem", margin: "0 0 0.6rem", letterSpacing: "0.04em" }}>📍 {m.dist}</p>
+                    <p style={{ color: p.ash, fontSize: "1rem", lineHeight: 1.8, margin: 0 }}>{m.desc}</p>
+                  </div>
+                );
+              })}
+            </div>}
+
+            {/* PHILOSOPHY */}
+            {tab === "philosophy" && <div>
+              <p style={{ fontFamily: cinzel, color: p.gold, fontSize: "0.78rem", letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "1.2rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${p.border}` }}>The Philosophy Beneath the Stories</p>
+              <p style={{ color: p.ash, fontSize: "1rem", marginBottom: "1.5rem", lineHeight: 1.8 }}>Every aspect of Shiva's iconography is a philosophical statement. Nothing is decorative. Here are the core ideas that the stories, forms, and stotras are all pointing toward.</p>
+              {philosophyPoints.map((pt, i) => (
+                <div key={i} style={{ background: p.card, border: `1px solid ${p.border}`, borderRadius: "8px", padding: "1.2rem", display: "flex", gap: "1rem", marginBottom: "0.8rem" }}>
+                  <span style={{ fontSize: "1.8rem", minWidth: "2.2rem", marginTop: "0.1rem" }}>{pt.icon}</span>
+                  <div>
+                    <p style={{ fontFamily: cinzel, color: p.saffron, fontWeight: 600, margin: "0 0 0.4rem", fontSize: "1rem" }}>{pt.concept}</p>
+                    <p style={{ color: p.ash, fontSize: "0.98rem", lineHeight: 1.8, margin: 0 }}>{pt.text}</p>
+                  </div>
+                </div>
+              ))}
+              <div style={{ background: "linear-gradient(135deg,rgba(212,175,55,0.1),rgba(255,140,0,0.08))", border: "1px solid rgba(212,175,55,0.3)", borderRadius: "6px", padding: "1rem 1.1rem", marginTop: "1.5rem", color: p.gold, fontSize: "1rem", lineHeight: 1.85, fontStyle: "italic" }}>
+                <strong style={{ color: p.saffron, fontStyle: "normal" }}>The core insight of Shaivism:</strong> Shiva is not a god who lives somewhere else and grants wishes. He is what you fundamentally are — pure consciousness — before the layers of thought, identity, and story were added. Every Shiva temple visit is, at its deepest, a return home.
+              </div>
+            </div>}
+
+          </div>
+
+          {/* FOOTER */}
+          <footer style={{ textAlign: "center", padding: "1.5rem", borderTop: `1px solid ${p.border}`, color: p.ash, fontSize: "0.9rem", fontFamily: cinzel, letterSpacing: "0.2em" }}>
+            OM NAMAH SHIVAYA · ॐ नमः शिवाय
+          </footer>
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
